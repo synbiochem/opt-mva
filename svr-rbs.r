@@ -6,7 +6,7 @@
 # doLibrary(rbslib=1); doLibrary(rbslib=2)
 # doFigure(rbslib=1); doFigure(rbslib=2)
 
-getTrainingSet <- function(dataFile='data/rbs1/trainset.rbs1.v2.csv', colName='FC', colFeatStart=3, colFeatEnd=6,
+getTrainingSet <- function(dataFile=file.path('data', 'rbs1', 'trainset.rbs1.v2.csv'), colName='FC', colFeatStart=3, colFeatEnd=6,
                            AVERAGEINPUT=1, ODCORRECT=FALSE) {
                                         # Read training set for RBS1 Library 
                                         # colName: name of the column with the y values
@@ -44,7 +44,7 @@ getTrainingSet <- function(dataFile='data/rbs1/trainset.rbs1.v2.csv', colName='F
     
 }
 
-getTrainingSetLib2 <- function(dataFile='data/rbs2/trainset.rbs2.update.csv', colName='FC', colFeatStart=3, colFeatEnd=42,
+getTrainingSetLib2 <- function(dataFile=file.path('data' ,'rbs2', 'trainset.rbs2.update.csv'), colName='FC', colFeatStart=3, colFeatEnd=42,
                                AVERAGEINPUT=1, ODCORRECT=TRUE,
                                labels=c("mvaE.seq_rbs","mvaS.seq_rbs","mvaK1.seq_rbs","idi.seq_rbs")) {
                                         # Read training set for RBS2 library
@@ -419,7 +419,7 @@ doLibrary <- function(rbslib=1) {
         feat0 <- feat
         dataset <- compactTrainingSet(dataset, ncomp=ncomp)
         attach(dataset, warn.conflicts=FALSE)
-        nlib <- read.csv('data/rbs1/fullset.rbs1.v2.csv', header=F)
+        nlib <- read.csv(file.path('dat',' rbs1', 'fullset.rbs1.v2.csv'), header=F)
         featLib <- nlib[,colFeat:dim(nlib)[2]]
         labels <- c('rbs1', 'rbs2')
         seqCols <- c(3,4)
@@ -434,7 +434,7 @@ doLibrary <- function(rbslib=1) {
         feat0 <- feat
         dataset <- compactTrainingSet(dataset, ncomp=14)
         attach(dataset, warn.conflicts=FALSE)
-        nlib <- read.csv('data/rbs2/newfullset.v2.csv', header=F)
+        nlib <- read.csv(file.path('data', 'rbs2', 'newfullset.v2.csv'), header=F)
         featLib <- nlib[,colFeat:dim(nlib)[2]]
         labels <- c("mvaE.seq", "mvaS.seq", "mvaK1.seq", "idi.seq")
         seqCols <- seq(1, 4)
@@ -476,12 +476,12 @@ doLibrary <- function(rbslib=1) {
 
     if (rbslib==1) {
         names(res) <- c("GPPS.seq","limS.seq","GPPS.rbs","limS.rbs","lim_svm", "lim_eff")
-        write.csv(dd, 'data/rbs1/rbslib1_pred.paper0.csv')
-        write.csv(res[order(res[,dim(res)[2]]),], 'data/rbs1/rbslib1_pred.paper.csv',quote=F,row.names=F)
+        write.csv(dd, file.path('data','rbs1', 'rbslib1_pred.paper0.csv'))
+        write.csv(res[order(res[,dim(res)[2]]),], file.path('data', 'rbs1' ,'rbslib1_pred.paper.csv'),quote=F,row.names=F)
     } else {
         names(res) <- c("mvaE.seq","mvaS.seq","mvaK1.seq","idi.seq","mvaE.rbs","mvaS.rbs","mvaK1.rbs","idi.rbs","lim_svm", "lim_eff")
-        write.csv(dd, 'data/rbs2/rbslib2_pred.paper0.csv')
-        write.csv(res[order(res[,dim(res)[2]]),], 'data/rbs2/rbslib2_pred.paper.csv', quote=F,row.names=F)
+        write.csv(dd, file.path('data', 'rbs2', 'rbslib2_pred.paper0.csv'))
+        write.csv(res[order(res[,dim(res)[2]]),], file.path('data', 'rbs2', 'rbslib2_pred.paper.csv'), quote=F,row.names=F)
     }
 
 }
@@ -490,7 +490,7 @@ ranktest <- function() {
     # Perform a Wilcoxon rank test for the two MVA libraries 
     dat <- getTrainingSetLib2()
     m1 <- dat$mm
-    m2 <- read.csv('data/rbs2.2/results_RBS_MVA2_ods.csv')
+    m2 <- read.csv(file.path('data', 'rbs2.2', 'results_RBS_MVA2_ods.csv'))
     ix1 <- grep('MVARBS', m2$RBS)
     ix2 <- grep('MVARBS41_', m2$RBS, invert=T)
     ix <- intersect(ix1, ix2)
@@ -516,22 +516,30 @@ tablogs <- function() {
     su1.q3 <- su1[5]
     ix1 <- dat1$mm$FC <= su1.q1
     ix2 <- dat1$mm$FC >= su1.q3
-    write.table(dat1$mm$rbs1[ix1], file='data/rbs1/seqlogos/lo-gpps.txt', quote=F, row.names=F, col.names=F)
-    write.table(dat1$mm$rbs2[ix1], file='data/rbs1/seqlogos/lo-lims.txt', quote=F, row.names=F, col.names=F)
-    write.table(dat1$mm$rbs1[ix2], file='data/rbs1/seqlogos/hi-gpps.txt', quote=F, row.names=F, col.names=F)
-    write.table(dat1$mm$rbs2[ix2], file='data/rbs1/seqlogos/hi-lims.txt', quote=F, row.names=F, col.names=F)
+    outdir <- file.path('data','rbs1', 'seqlogos')
+    if (!file.exists(outdir)) {
+        dir.create(outdir)
+    }
+    write.table(dat1$mm$rbs1[ix1], file=file.path(outdir, 'lo-gpps.txt'), quote=F, row.names=F, col.names=F)
+    write.table(dat1$mm$rbs2[ix1], file=file.path(outdir, 'lo-lims.txt'), quote=F, row.names=F, col.names=F)
+    write.table(dat1$mm$rbs1[ix2], file=file.path(outdir, 'hi-gpps.txt'), quote=F, row.names=F, col.names=F)
+    write.table(dat1$mm$rbs2[ix2], file=file.path(outdir, 'hi-lims.txt'), quote=F, row.names=F, col.names=F)
     dat2 <- getTrainingSetLib2()
     su2 <- summary(dat2$mm$FC)
     su2.q1 <- su2[2]
     su2.q3 <- su2[5]
     ix1 <- dat2$mm$FC <= su2.q1
     ix2 <- dat2$mm$FC >= su2.q3
-    write.table(dat2$mm$mvaE.seq_rbs[ix1], file='data/rbs2/seqlogos/lo-mvaE.txt', quote=F, row.names=F, col.names=F)
-    write.table(dat2$mm$mvaS.seq_rbs[ix1], file='data/rbs2/seqlogos/lo-mvaS.txt', quote=F, row.names=F, col.names=F)
-    write.table(dat2$mm$mvaK1.seq_rbs[ix1], file='data/rbs2/seqlogos/lo-mvaK1.txt', quote=F, row.names=F, col.names=F)
-    write.table(dat2$mm$idi.seq_rbs[ix1], file='data/rbs2/seqlogos/lo-idi.txt', quote=F, row.names=F, col.names=F)
-    write.table(dat2$mm$mvaE.seq_rbs[ix2], file='data/rbs2/seqlogos/hi-mvaE.txt', quote=F, row.names=F, col.names=F)
-    write.table(dat2$mm$mvaS.seq_rbs[ix2], file='data/rbs2/seqlogos/hi-mvaS.txt', quote=F, row.names=F, col.names=F)
-    write.table(dat2$mm$mvaK1.seq_rbs[ix2], file='data/rbs2/seqlogos/hi-mvaK1.txt', quote=F, row.names=F, col.names=F)
-    write.table(dat2$mm$idi.seq_rbs[ix2], file='data/rbs2/seqlogos/hi-idi.txt', quote=F, row.names=F, col.names=F)
+    outdir <- file.path('data','rbs2', 'seqlogos')
+    if (!file.exists(outdir)) {
+        dir.create(outdir)
+    }
+    write.table(dat2$mm$mvaE.seq_rbs[ix1], file=file.path(outdir, 'lo-mvaE.txt'), quote=F, row.names=F, col.names=F)
+    write.table(dat2$mm$mvaS.seq_rbs[ix1], file=file.path(outdir, 'lo-mvaS.txt'), quote=F, row.names=F, col.names=F)
+    write.table(dat2$mm$mvaK1.seq_rbs[ix1], file=file.path(outdir, 'lo-mvaK1.txt'), quote=F, row.names=F, col.names=F)
+    write.table(dat2$mm$idi.seq_rbs[ix1], file=file.path(outdir, 'lo-idi.txt'), quote=F, row.names=F, col.names=F)
+    write.table(dat2$mm$mvaE.seq_rbs[ix2], file=file.path(outdir, 'hi-mvaE.txt'), quote=F, row.names=F, col.names=F)
+    write.table(dat2$mm$mvaS.seq_rbs[ix2], file=file.path(outdir, 'hi-mvaS.txt'), quote=F, row.names=F, col.names=F)
+    write.table(dat2$mm$mvaK1.seq_rbs[ix2], file=file.path(outdir, 'hi-mvaK1.txt'), quote=F, row.names=F, col.names=F)
+    write.table(dat2$mm$idi.seq_rbs[ix2], file=file.path(outdir, 'hi-idi.txt'), quote=F, row.names=F, col.names=F)
 }
