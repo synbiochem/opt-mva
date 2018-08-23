@@ -66,9 +66,12 @@ class Norm:
         else:
             return x*(self.max - self.min ) + self.min
 
+
+# Configuration parameters
 conf = {'RBSLIB': 3, 'EPOCHS': 500, 'CV': False, 'myCV': True, 
         'cc1': None, 'cc2': None, 'cc3': None}
 
+# Read dataset
 if conf['RBSLIB'] == 3:
     dataframe = pandas.read_csv( os.path.join('rbs3.2', 'trainset.rbs3.csv') )
     train = dataframe.loc[:,'mvaE seq_1_A':'idi seq_2_T']
@@ -96,6 +99,7 @@ else:
     fullset = pandas.read_csv( os.path.join('rbs2', 'newfullset.v2.csv'), header=None  )
 
 def deepmodel():
+    """ Model for library 1 """
     HIDDENDIM = 128
     HIDDENDIM2 = 128
     LOSS = 'mse'
@@ -109,6 +113,7 @@ def deepmodel():
     return model
 
 def deepmodel2():
+    """ Model for library 2 """
     HIDDENDIM = 128
     HIDDENDIM2 = 128
     LOSS = 'mse'
@@ -123,6 +128,7 @@ def deepmodel2():
 
 
 def deepmodel3():
+    """ Model for library 3 """
     HIDDENDIM = 128
     HIDDENDIM2 = 128
     LOSS = 'mse'
