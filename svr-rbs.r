@@ -1,5 +1,8 @@
-# RBS-ML, Pablo Carbonell SYNBIOCHEM 2017
-# Machine learning-based RBS predictor for the limonene pathway
+# RBS-ML (c) University of Manchester 2018
+# RBS-ML is licensed under the MIT License.
+# To view a copy of this license, visit <http://opensource.org/licenses/MIT/>.
+# @author:  Pablo Carbonell SYNBIOCHEM 2017
+# @description: Machine learning-based RBS predictor for the limonene pathway
 # Main routines:
 # doFullTest(R=1000)
 # SummaryTest(R=1000)
